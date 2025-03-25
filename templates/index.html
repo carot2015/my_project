@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Violympic - Trang Chủ</title>
+  <!-- Sử dụng cú pháp của Flask nếu file nằm trong templates -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="landing-page">
+    <div class="hero">
+      <h1>Violympic</h1>
+      <p>Thách thức bản thân. Khám phá tài năng.</p>
+      <div class="cta-buttons">
+        <a class="btn primary" href="{{ url_for('login') }}">Đăng nhập</a>
+        <a class="btn secondary" href="{{ url_for('register') }}">Đăng ký</a>
+      </div>
+    </div>
+  </div>
+  <footer>
+    &copy; 2025 for PhuongLinh.org. All rights reserved.
+  </footer>
+</body>
+</html>

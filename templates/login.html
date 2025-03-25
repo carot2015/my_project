@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng nhập - Violympic</title>
+  <!-- Sử dụng cú pháp Flask để liên kết CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-container">
+      <!-- Cột bên trái: Hình minh họa -->
+      <div class="login-image">
+        <img src="{{ url_for('static', filename='illustration.jpg') }}" alt="Minh họa Đăng nhập">
+      </div>
+      <!-- Cột bên phải: Form đăng nhập -->
+      <div class="login-form-container">
+        <h2>Đăng nhập</h2>
+        {% if error %}
+          <p class="error-message" style="color: red;">{{ error }}</p>
+        {% endif %}
+        <form id="loginForm" method="POST" novalidate>
+          <div class="form-group">
+            <label for="username">Tài khoản:</label>
+            <input type="text" id="username" name="username" placeholder="Nhập tài khoản" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Mật khẩu:</label>
+            <input type="password" id="password" name="password" placeholder="Nhập mật khẩu" required>
+          </div>
+          <button type="submit" id="loginButton" class="btn login-btn">Đăng nhập</button>
+        </form>
+        <!-- Phần hiển thị lỗi, nếu có -->
+        <p id="error-message" class="error-message" style="display: none;"></p>
+        <div class="back-link">
+          <a href="{{ url_for('index') }}">← Quay lại Trang chủ</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Sử dụng cú pháp Flask để liên kết file JavaScript -->
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
