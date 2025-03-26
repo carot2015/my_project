@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài thi {{ subject }} - Lớp {{ grade }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/exam.css') }}">
+</head>
+<body>
+  <!-- Phần Giới thiệu và Nội quy thi -->
+  <div id="exam-intro" class="exam-intro">
+    <h2>Nội quy thi môn {{ subject }} - Lớp {{ grade }}</h2>
+    <p>
+      - Bài thi gồm {{ question_count }} câu hỏi.<br>
+      - Thời gian thi tối đa: {{ time_limit }} phút.<br>
+      - Sau khi trả lời mỗi câu, nhấn "Nộp câu hỏi" để chuyển sang câu tiếp theo.<br>
+      - Nếu sai quá 3 lần ở một câu, bài thi kết thúc.
+    </p>
+    <button id="startExam" class="btn">Bắt đầu thi</button>
+  </div>
+  
+  <!-- Giao diện Bài thi (ẩn ban đầu) -->
+  <div id="exam-container" class="exam-container" style="display: none;">
+    <header class="exam-header">
+      <h1>Bài thi {{ subject }} - Lớp {{ grade }}</h1>
+      <div class="exam-info">
+        <span id="timer">{{ time_limit }}:00</span>
+        <span id="score">Điểm: 0</span>
+      </div>
+    </header>
+    <main class="exam-content">
+      <form id="examForm">
+        <!-- JS sẽ load các câu hỏi vào đây -->
+        <div id="question-container"></div>
+        <button type="button" id="submitQuestion" class="btn">Nộp câu hỏi</button>
+      </form>
+      <!-- Nút Hoàn thành Bài thi, xuất hiện khi hết câu hỏi hoặc hết thời gian -->
+      <button type="button" id="completeExam" class="btn" style="display: none;">Hoàn thành bài thi</button>
+    </main>
+  </div>
+
+  <!-- Nhúng dữ liệu từ backend sang JS -->
+  <script>
+    // examQuestions chứa danh sách câu hỏi (ở dạng JSON)
+    const examQuestions = {{ questions|tojson }};
+    const examSubject = "{{ subject }}";
+    const examGrade = "{{ grade }}";
+  </script>
+  <script src="{{ url_for('static', filename='js/exam.js') }}"></script>
+</body>
+</html>

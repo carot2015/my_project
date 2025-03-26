@@ -77,6 +77,53 @@ def register():
         return render_template('register.html', error=str(e),
                                fullname=fullname, email=email, username=username)
 
+@app.route('/exam/<subject>/<grade>')
+def exam(subject, grade):
+    conn = get_db_connection()
+    cursor = conn.execute(
+        "SELECT id, question_text, question_type, choices, answer FROM questions WHERE subject = ? AND grade = ?",
+        (subject, grade)
+    )
+    rows = cursor.fetchall()
+    conn.close()
+
+    questions = []
+    for row in rows:
+        questions.append({
+            "id": row["id"],
+            "question": row["question_text"],
+            "question_type": row["question_type"],
+            "choices": row["choices"],  # Nếu cho dạng MCQ, đây là chuỗi JSON; JS sẽ parse.
+            "answer": row["answer"]
+        })
+
+    question_count = len(questions)
+    time_limit = 3  # 3 phút
+
+    return render_template('exam.html',
+                           subject=subject,
+                           grade=grade,
+                           questions=questions,
+                           question_count=question_count,
+                           time_limit=time_limit)
+
+@app.route('/choose_exam', methods=['GET', 'POST'])
+def choose_exam():
+    if request.method == 'GET':
+        return render_template('choose_exam.html')
+    
+    # Khi form được submit, lấy dữ liệu subject và grade
+    subject = request.form.get('subject')
+    grade = request.form.get('grade')
+    
+    # Kiểm tra dữ liệu: nếu không có, render lại trang với thông báo lỗi
+    if not subject or not grade:
+        flash("Vui lòng chọn môn thi và lớp học.")
+        return render_template('choose_exam.html')
+    
+    # Chuyển hướng sang route exam với subject và grade đã chọn
+    return redirect(url_for('exam', subject=subject, grade=grade))
+    
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)

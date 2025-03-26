@@ -52,7 +52,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         console.log('Response from server:', data); // Debug kết quả từ server
         // Nếu server trả về "success", chuyển hướng người dùng sang trang exam
         if (data.status === 'success') {
-            window.location.href = '/exam';
+            window.location.href = '/choose_exam';
         } else {
             // Nếu không, hiển thị thông báo lỗi từ backend
             errorMessage.style.display = 'block';

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chọn môn thi - Violympic</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="choose-exam-container">
+    <h2>Chọn Môn thi và Lớp học</h2>
+    <form id="chooseExamForm" method="POST">
+      <div class="form-group">
+        <label for="subject">Môn thi:</label>
+        <select id="subject" name="subject">
+          <option value="Toán">Toán</option>
+          <option value="Tiếng Anh">Tiếng Anh</option>
+          <option value="Tiếng Việt">Tiếng Việt</option>
+          <!-- Thêm các môn khác nếu cần -->
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="grade">Lớp:</label>
+        <select id="grade" name="grade">
+          <option value="1">Lớp 1</option>
+          <option value="2">Lớp 2</option>
+          <option value="3">Lớp 3</option>
+          <!-- Thêm các lớp khác nếu cần -->
+        </select>
+      </div>
+      <button type="submit" class="btn">Bắt đầu thi</button>
+    </form>
+  </div>
+</body>
+</html>
