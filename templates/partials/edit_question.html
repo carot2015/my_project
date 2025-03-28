@@ -1,0 +1,38 @@
+<form method="POST" action="{{ url_for('edit_question', id=question['id']) }}">
+  <div class="form-group">
+    <label for="subject">Môn học:</label>
+    <select id="subject" name="subject" required>
+      <option value="Toán" {% if question['subject'] == 'Toán' %}selected{% endif %}>Toán</option>
+      <option value="Tiếng Anh" {% if question['subject'] == 'Tiếng Anh' %}selected{% endif %}>Tiếng Anh</option>
+      <option value="Tiếng Việt" {% if question['subject'] == 'Tiếng Việt' %}selected{% endif %}>Tiếng Việt</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="grade">Lớp học:</label>
+    <select id="grade" name="grade" required>
+      <option value="1" {% if question['grade'] == '1' %}selected{% endif %}>Lớp 1</option>
+      <option value="2" {% if question['grade'] == '2' %}selected{% endif %}>Lớp 2</option>
+      <option value="3" {% if question['grade'] == '3' %}selected{% endif %}>Lớp 3</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="question_text">Nội dung câu hỏi:</label>
+    <textarea id="question_text" name="question_text" required>{{ question['question_text'] }}</textarea>
+  </div>
+  <div class="form-group">
+    <label for="question_type">Loại câu hỏi:</label>
+    <select id="question_type" name="question_type" required>
+      <option value="MCQ" {% if question['question_type'] == 'MCQ' %}selected{% endif %}>Trắc nghiệm</option>
+      <option value="essay" {% if question['question_type'] == 'essay' %}selected{% endif %}>Tự luận</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label for="choices">Lựa chọn (nếu trắc nghiệm, dạng JSON):</label>
+    <textarea id="choices" name="choices">{{ question['choices'] }}</textarea>
+  </div>
+  <div class="form-group">
+    <label for="answer">Đáp án đúng:</label>
+    <input type="text" id="answer" name="answer" value="{{ question['answer'] }}" required>
+  </div>
+  <button type="submit" class="btn">Cập nhật câu hỏi</button>
+</form>

@@ -1,0 +1,47 @@
+<!-- templates/partials/add_question.html -->
+<form method="POST" action="{{ url_for('add_question') }}">
+  <div class="form-group">
+    <label for="subject">Môn học:</label>
+    <select id="subject" name="subject" required>
+      <option value="Toán">Toán</option>
+      <option value="Tiếng Anh">Tiếng Anh</option>
+      <option value="Tiếng Việt">Tiếng Việt</option>
+      <!-- Thêm các môn khác nếu cần -->
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="grade">Lớp học:</label>
+    <select id="grade" name="grade" required>
+      <option value="1">Lớp 1</option>
+      <option value="2">Lớp 2</option>
+      <option value="3">Lớp 3</option>
+      <!-- Thêm các lớp khác nếu cần -->
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="question_text">Nội dung câu hỏi:</label>
+    <textarea id="question_text" name="question_text" required></textarea>
+  </div>
+
+  <div class="form-group">
+    <label for="question_type">Loại câu hỏi:</label>
+    <select id="question_type" name="question_type" required>
+      <option value="MCQ">Trắc nghiệm</option>
+      <option value="essay">Tự luận</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="choices">Lựa chọn (dành cho dạng trắc nghiệm, nhập dưới dạng JSON):</label>
+    <textarea id="choices" name="choices" placeholder='{"A": "Option A", "B": "Option B", "C": "Option C", "D": "Option D"}'></textarea>
+  </div>
+
+  <div class="form-group">
+    <label for="answer">Đáp án đúng:</label>
+    <input type="text" id="answer" name="answer" required>
+  </div>
+
+  <button type="submit" class="btn">Thêm câu hỏi</button>
+</form>

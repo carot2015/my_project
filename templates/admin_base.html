@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản trị - {{ page_title or "Dashboard" }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+  <div class="admin-wrapper">
+    <header class="admin-header">
+      <h1>Quản trị Violympic</h1>
+      <nav class="admin-nav">
+        <ul>
+          <li><a href="{{ url_for('admin_dashboard', page='questions') }}">Quản lý câu hỏi</a></li>
+          <li><a href="{{ url_for('admin_dashboard', page='add') }}">Thêm câu hỏi</a></li>
+          <li><a href="{{ url_for('logout') }}">Đăng xuất</a></li>
+        </ul>
+      </nav>
+    </header>
+    
+    <div class="admin-content">
+      {% if page == 'questions' %}
+        {% include 'partials/admin_questions.html' %}
+      {% elif page == 'add' %}
+        {% include 'partials/add_question.html' %}
+      {% elif page == 'edit' %}
+        {% include 'partials/edit_question.html' %}
+      {% else %}
+        <p>Chào mừng đến với trang quản trị.</p>
+      {% endif %}
+    </div>
+    
+    <footer class="admin-footer">
+      <p>&copy; 2025 MicroLeaning. All rights reserved.</p>
+    </footer>
+  </div>
+</body>
+</html>

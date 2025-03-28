@@ -2,6 +2,7 @@ import sqlite3
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash
 from database import init_db, insert_user, get_db_connection
 from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Dùng để quản lý session
@@ -14,12 +15,12 @@ def index():
 # Route cho trang đăng nhập
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    print("Đã vào hàm login", flush=True)
+    # print("Đã vào hàm login", flush=True)
     if request.method == 'GET':
         # Nếu là GET thì chỉ render trang đăng nhập
         return render_template('login.html')
     # Lấy dữ liệu từ form đăng nhập
-    username = request.form.get('username').strip()
+    username = (request.form.get('username') or "").strip()
     password = request.form.get('password')
 
     # Kiểm tra các trường bắt buộc có được điền không
@@ -37,7 +38,8 @@ def login():
     if user and check_password_hash(user['password'], password):
         session['user_id'] = user['id']
         session['username'] = user['username']
-        return jsonify({"status": "success"}), 200
+        session['role'] = user['role'] # Lưu vai trò, ví dụ: 'user' hoặc 'admin'
+        return jsonify({"status": "success", "role": user['role']}), 200
     else:
         # Nếu không tìm thấy, render lại trang đăng nhập với thông báo lỗi
         return jsonify({"status": "error", "message": "Tài khoản hoặc mật khẩu không đúng."}), 401
@@ -123,7 +125,148 @@ def choose_exam():
     
     # Chuyển hướng sang route exam với subject và grade đã chọn
     return redirect(url_for('exam', subject=subject, grade=grade))
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'role' not in session or session['role'] != 'admin':
+            flash("Bạn không có quyền truy cập trang này.")
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+@app.route('/admin', methods=['GET'])
+@admin_required
+def admin_dashboard():
+    # Lấy tham số page từ URL, mặc định nếu không có là 'questions'
+    page = request.args.get('page', 'questions')
+
+    # Truy vấn dữ liệu (ví dụ, danh sách câu hỏi) nếu cần cho trang 'questions'
+    conn = get_db_connection()
+    questions = []
+    if page == 'questions':
+        cursor = conn.execute("SELECT id, subject, grade, question_text, question_type, answer FROM questions")
+        questions = cursor.fetchall()
+    conn.close()
+
+    # Dựa vào giá trị của page, render nội dung phù hợp
+    if page == 'questions':
+        content = render_template('partials/admin_questions.html', questions=questions)
+    elif page == 'add':
+        content = render_template('partials/add_question.html')
+    elif page == 'edit':
+        # Ví dụ: Khi hiện trang sửa, bạn cần truyền thêm câu hỏi hiện hành
+        # content = render_template('partials/edit_question.html', question=question)
+        content = "<p>Chức năng sửa câu hỏi (edit) chưa được tích hợp đầy đủ.</p>"
+    else:
+        content = "<p>Trang quản trị không xác định.</p>"
+
+    return render_template('admin_base.html', page_title="Quản trị - " + page.capitalize(), content=content)
+
+
+@app.route('/add_question', methods=['POST'])
+@admin_required
+def add_question():
+    subject = request.form.get('subject')
+    grade = request.form.get('grade')
+    question_text = request.form.get('question_text')
+    question_type = request.form.get('question_type')
+    choices = request.form.get('choices') or None
+    answer = request.form.get('answer')
+
+    if not subject or not grade or not question_text or not question_type or not answer:
+        flash("Vui lòng điền đầy đủ thông tin.")
+        return redirect(url_for('admin_dashboard', page='add'))
+
+    conn = get_db_connection()
+    conn.execute(
+        "INSERT INTO questions (subject, grade, question_text, question_type, choices, answer) VALUES (?, ?, ?, ?, ?, ?)",
+        (subject, grade, question_text, question_type, choices, answer)
+    )
+    conn.commit()
+    conn.close()
+
+    flash("Câu hỏi đã được thêm thành công.")
+    return redirect(url_for('admin_dashboard', page='questions'))
+
     
+@app.route('/edit_question/<int:id>', methods=['GET', 'POST'])
+@admin_required
+def edit_question(id):
+    conn = get_db_connection()
+    question = conn.execute("SELECT * FROM questions WHERE id = ?", (id,)).fetchone()
+    if not question:
+        flash("Câu hỏi không tồn tại.")
+        return redirect(url_for('admin_dashboard', page='questions'))
+    if request.method == 'POST':
+        # Xử lý cập nhật câu hỏi
+        conn.execute(
+            "UPDATE questions SET subject = ?, grade = ?, question_text = ?, question_type = ?, choices = ?, answer = ? WHERE id = ?",
+            (request.form.get('subject'), request.form.get('grade'), request.form.get('question_text'),
+             request.form.get('question_type'), request.form.get('choices') or None, request.form.get('answer'), id)
+        )
+        conn.commit()
+        conn.close()
+        flash("Câu hỏi đã được cập nhật.")
+        return redirect(url_for('admin_dashboard', page='questions'))
+    return render_template('admin_base.html', page_title="Chỉnh sửa Câu hỏi", page="edit", question=question)
+
+
+    
+@app.route('/delete_question/<int:id>', methods=['POST'])
+@admin_required
+def delete_question(id):
+    # Kết nối với cơ sở dữ liệu
+    conn = get_db_connection()
+    question = conn.execute("SELECT * FROM questions WHERE id = ?", (id,)).fetchone()
+    
+    # Kiểm tra nếu câu hỏi tồn tại
+    if not question:
+        flash("Câu hỏi không tồn tại.")
+        conn.close()
+        return redirect(url_for('admin_dashboard', page='questions'))
+    
+    # Xóa câu hỏi
+    conn.execute("DELETE FROM questions WHERE id = ?", (id,))
+    conn.commit()
+    conn.close()
+    flash("Câu hỏi đã được xóa thành công.")
+    return redirect(url_for('admin_dashboard', page='questions'))
+
+
+
+def create_admin():
+    conn = get_db_connection()
+    # Đặt dữ liệu admin, ví dụ:
+    admin_fullname = "Admin"
+    admin_email = "admin@example.com"
+    admin_username = "admin"
+    admin_password = "123456"  # Bạn nên chọn mật khẩu an toàn hơn trong thực tế
+    hashed_password = generate_password_hash(admin_password)
+    
+    try:
+        conn.execute(
+            "INSERT INTO users (fullname, email, username, password, role) VALUES (?, ?, ?, ?, ?)",
+            (admin_fullname, admin_email, admin_username, hashed_password, "admin")
+        )
+        conn.commit()
+        print("Admin được tạo thành công!")
+    except sqlite3.IntegrityError:
+        print("Tài khoản admin này đã tồn tại!")
+    finally:
+        conn.close()
+
+@app.route('/logout')
+def logout():
+    # Xóa hết các dữ liệu trong session
+    session.clear()
+    flash("Bạn đã đăng xuất thành công.")
+    # Chuyển hướng trở lại trang đăng nhập
+    return redirect(url_for('login'))
+
+
+
 if __name__ == '__main__':
     init_db()
+    # Chạy hàm tạo admin (chạy một lần để cài đặt tài khoản admin)
+    #create_admin()
     app.run(debug=True)

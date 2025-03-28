@@ -1,0 +1,92 @@
+/* Global Reset & Font */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background: #f4f7f6;
+    color: #333;
+  }
+  
+  .admin-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  /* Header */
+  .admin-header {
+    background: #3498db;
+    color: #fff;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .admin-header h1 {
+    margin: 0;
+    font-size: 28px;
+  }
+  
+  .admin-header h1 span {
+    font-weight: normal;
+    font-size: 20px;
+  }
+  
+  .admin-nav a {
+    color: #fff;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 16px;
+    transition: color 0.3s ease;
+  }
+  
+  .admin-nav a:hover {
+    color: #cce6ff;
+  }
+  
+  /* Content */
+  .admin-content {
+    flex: 1;
+    padding: 20px;
+    background: #fff;
+    margin: 20px auto;
+    max-width: 1200px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
+  
+  /* Flash Messages */
+  .flash-messages {
+    margin-bottom: 20px;
+    border: 1px solid #e74c3c;
+    background: #fcebea;
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  .flash-message {
+    margin: 0;
+    font-size: 14px;
+    color: #e74c3c;
+  }
+  
+  /* Footer */
+  .admin-footer {
+    background: #333;
+    color: #ccc;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 14px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .admin-header, .admin-nav a {
+      font-size: 14px;
+    }
+    .admin-header h1 {
+      font-size: 24px;
+    }
+  }
+  

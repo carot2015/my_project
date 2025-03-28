@@ -15,8 +15,21 @@ def init_db():
                          fullname TEXT NOT NULL,
                          email TEXT UNIQUE NOT NULL,
                          username TEXT UNIQUE NOT NULL,
-                         password TEXT NOT NULL
+                         password TEXT NOT NULL,
+                         role TEXT NOT NULL DEFAULT 'user'
                        );''')
+    
+    # Tạo bảng questions
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS questions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                subject TEXT NOT NULL,
+                grade TEXT NOT NULL,
+                question_text TEXT NOT NULL,
+                question_type TEXT NOT NULL,
+                choices TEXT,
+                answer TEXT NOT NULL
+            );''')
     conn.close()
 
 def user_exists(email, username):
@@ -26,7 +39,8 @@ def user_exists(email, username):
     conn.close()
     return row
 
-def insert_user(fullname, email, username, hashed_password):
+# Hàm insert_user được cập nhật để nhận tham số role (mặc định là 'user')
+def insert_user(fullname, email, username, hashed_password, role="user"):
     # Kiểm tra nếu email hoặc username đã tồn tại
     row = user_exists(email, username)
     if row:
@@ -39,9 +53,9 @@ def insert_user(fullname, email, username, hashed_password):
     try:
         with conn:
             conn.execute('''
-                INSERT INTO users (fullname, email, username, password) 
-                VALUES (?, ?, ?, ?)
-            ''', (fullname, email, username, hashed_password))
+                INSERT INTO users (fullname, email, username, password, role) 
+                VALUES (?, ?, ?, ?, ?)
+            ''', (fullname, email, username, hashed_password, role))
         conn.close()
         return True
     except sqlite3.IntegrityError as e:

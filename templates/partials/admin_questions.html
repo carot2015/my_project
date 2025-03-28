@@ -1,0 +1,30 @@
+<table class="question-table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Môn học</th>
+      <th>Lớp</th>
+      <th>Nội dung câu hỏi</th>
+      <th>Loại câu hỏi</th>
+      <th>Đáp án</th>
+      <th>Hành động</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for question in questions %}
+    <tr>
+      <td>{{ question['id'] }}</td>
+      <td>{{ question['subject'] }}</td>
+      <td>{{ question['grade'] }}</td>
+      <td>{{ question['question_text'] }}</td>
+      <td>{{ question['question_type'] }}</td>
+      <td>{{ question['answer'] }}</td>
+      <td>
+        <a href="{{ url_for('edit_question', id=question['id']) }}" class="btn btn-edit">Sửa</a>
+        <a href="#" class="btn btn-delete" onclick="event.preventDefault(); document.getElementById('delete-form-{{ question['id'] }}').submit();">Xóa</a>
+        <form id="delete-form-{{ question['id'] }}" method="POST" action="{{ url_for('delete_question', id=question['id']) }}" style="display: none;"></form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
